@@ -1,0 +1,26 @@
+package:
+  name:     pybind11_helloworld
+  version:  0.0.0
+  platform: linux
+
+source:
+  git_rev: 0.0.0
+  git_url: https://github.com/awr-paul/pybind11_helloworld.git
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - gxx_linux-64
+    - pybind11
+    - numpy
+  run:
+    - python=3.8
+    - setuptools
+    - gxx_linux-64
+    - pybind11
+    - numpy
+
+about:
+  home:    https://github.com/awr-paul/pybind11_helloworld
+  license: Apache License 2.0

@@ -2,12 +2,10 @@
 
 An example helloworld conda package that contains a submodule that is a pybind11 extension.
 
+Currently I'm trying to figure out how to stop the pybind11 convertor segfaulting due to a recursive cast:
+
 For example:
-```
->>> from pybind11_helloworld.submodule import hello
->>> import numpy as np
->>> arr = np.arange(12).reshape((3, 4))
->>> hello(arr)
-hello world! Got an array with 12 total elements
->>> exit()
+>>> from pybind11_helloworld.submodule import sometime
+>>> sometime()
+Segmentation fault (core dumped)
 ```

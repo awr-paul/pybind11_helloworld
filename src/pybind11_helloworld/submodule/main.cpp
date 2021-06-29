@@ -72,9 +72,7 @@ public:
     }
 
     static handle cast(DateTime64 src, return_value_policy, handle) {
-        // This line fails, it calls cast recursively when segfaults
         static PyObject* datetime_ptr = module::import("numpy").attr("datetime64").cast<object>().release().ptr();
-
         object datetime = reinterpret_borrow<object>(datetime_ptr);
         return datetime(src.nanos, "ns");
     }

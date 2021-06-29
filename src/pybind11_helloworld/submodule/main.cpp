@@ -1,23 +1,19 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <type_traits>
 
 namespace py = pybind11;
 
-struct DateTime64 {
-    static const std::int64_t NaT = std::numeric_limits<std::int64_t>::min();  // NPY_DATETIME_NAT;
-    std::int64_t nanos;
-    DateTime64(std::int64_t nanos_=NaT) : nanos(nanos_) {}
-    operator std::int64_t&() { return nanos; }
-    operator std::int64_t() const { return nanos; }
-};
+typedef std::int64_t datetime64_t;
+static_assert(std::is_default_constructible<datetime64_t>::value, "datetime64_t is not default constructible");
 
 namespace pybind11 {
 namespace detail {
 
-// Type conversion for numpy.datetime64 <--> DateTime64
-template <> struct type_caster<DateTime64> {
+// Type conversion for numpy.datetime64 <--> datetime64_t
+template <> struct type_caster<datetime64_t> {
 public:
-    PYBIND11_TYPE_CASTER(DateTime64, _("numpy.datetime64"));
+    PYBIND11_TYPE_CASTER(datetime64_t, _("numpy.datetime64"));
 
     bool load(handle src, bool) {
         static PyObject* astype_ptr = module::import("numpy").attr("datetime64").attr("astype").cast<object>().release().ptr();
@@ -71,19 +67,18 @@ public:
         return true;
     }
 
-    static handle cast(DateTime64 src, return_value_policy, handle) {
-        // This line fails, it calls cast recursively when segfaults
+    static handle cast(datetime64_t src, return_value_policy, handle) {
+        // This line fails, it calls cast<>() recursively then segfaults
         static PyObject* datetime_ptr = module::import("numpy").attr("datetime64").cast<object>().release().ptr();
-
         object datetime = reinterpret_borrow<object>(datetime_ptr);
-        return datetime(src.nanos, "ns");
+        return datetime(src, "ns");
     }
 };
 
 }} // namespace pybind11::detail
 
 
-DateTime64 sometime() {
+datetime64_t sometime() {
     return 1624905383956765909;
 }
 
